@@ -1,0 +1,2 @@
+Software em linguagem c para fins academicos do Instituto Federal de Ciência, Educação e Tecnologia de São Paulo, campus Araraquara. 
+Sua proposta é desenvolver um sistema para ordenação e busca de dados dos canditados participantes das eleições de 2012, com base no documento disponibilizado online onde se encontram todas as despesas dos candidatos durante o ano eleitoral.
