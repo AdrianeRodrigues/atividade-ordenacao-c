@@ -13,7 +13,7 @@ int main(int argc, char const *argv[])
 	FILE *arq, *saida, *analise;
      arq = fopen("DespesasCandidatos.txt","r");
      saida = fopen("saida.txt", "w");
-     analise = fopen("../analise-com-um-cento.txt", "w");
+     analise = fopen("../analise-teste.txt", "w");
     int i,ch;
     int qtn = MAX;
 
