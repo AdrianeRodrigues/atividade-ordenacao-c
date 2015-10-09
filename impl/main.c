@@ -1,37 +1,57 @@
 #include "uteis.h"
 #include "lib-ordenacao.h"
-#include "lib-ordenacao-seq-candidato.h"
 #include "lib-ordenacao-cnpj-fornecedor.h"
+#include "lib-ordenacao-seq-candidato.h"
 
-void ordenacao_selectsort(campos cp[], FILE *);
-void ordenacao_booblesort(campos cp[], FILE *);
-void ordenacao_insertsort(campos cp[], FILE *);
-void ordenacao_quicksort(campos cp[], FILE *);
+void ordenacao_cpf_candidato(FILE *, campos *, CHAR *);
+void ordenacao_fornecedor(FILE *, campos *, CHAR *);
+void ordenacao_seq_candidato(FILE *, campos *, CHAR *);
 
-int main(int argc, char const *argv[])
-{
-	FILE *arq, *saida, *analise;
-     arq = fopen("DespesasCandidatos.txt","r");
-     saida = fopen("saida.txt", "w");
-     analise = fopen("../analise-teste.txt", "w");
-    int i,ch;
-    int qtn = MAX;
+int main(){
+    printf("passei\n");
+    FILE *arq;
+    arq = fopen("DespesasCandidatos.txt","r");
 
-	fseek(arq,393,SEEK_SET);
-
-	campos *cadastros = malloc(sizeof(campos) * qtn);
-	CHAR *leitura = malloc(sizeof(CHAR)*qtn);
-
-    printf("lendo arquivo ...\n");
+    if(arq ==NULL){
+        printf("Nao foi possivel ler o arquivo!\n");
+        return -1;
+    }
+    
     fseek(arq,393,SEEK_SET);
-    for(i=0;i<MAX-1;i++){
+
+    campos *cadastros = malloc(sizeof(campos) * MIN);
+    CHAR *leitura = malloc(sizeof(CHAR)* MIN);
+    
+    printf("lendo arquivo ...");
+    printf("\nDEMONSTRACAO DOS METODOS DE ORDENACAO\n");
+
+   fseek(arq,393,SEEK_SET);
+
+   printf("\n\n\tORDENACAO POR CPF DO CANDICATO!\n");
+   ordenacao_cpf_candidato(arq, cadastros, leitura);
+   printf("\n\n\tORDENACAO POR CPF/CNPJ DO FORNECEDOR!\n");
+   ordenacao_fornecedor(arq, cadastros, leitura);
+   printf("\n\n\tORDENACAO POR SEQUENCIAL DO CANDIDATO!\n");
+   ordenacao_seq_candidato(arq, cadastros, leitura);
+    
+    printf("\n\nENCERRANDO PROGRAMA...\n\n");
+    fclose(arq);
+    printf("----------------------FIM----------------------\n");
+    free(cadastros);
+    free(leitura);
+    return 0;
+}
+
+void ordenacao_cpf_candidato(FILE *arq, campos *cadastros, CHAR *leitura){
+    int i, count_trocas=0,tempo_inicio=0, tempo_final=0;
+    for(i=0;i<MIN;i++){
         fscanf(arq,"%*c%[^\"]s",cadastros[i].dataehora);
-        fscanf(arq,"%*3c%[^\"]s",cadastros[i].sequencialcandidatoC);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].sequencialcandidatoC);
         fscanf(arq,"%*3c%[^\"]s",cadastros[i].uf);
         fscanf(arq,"%*3c%[^\"]s",cadastros[i].numeroue);
         fscanf(arq,"%*3c%[^\"]s",cadastros[i].municipio);
         fscanf(arq,"%*3c%[^\"]s",cadastros[i].siglapartido);
-        fscanf(arq,"%*3c%[^\"]s",cadastros[i].numerocandidato);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].numerocandidatoC);
         fscanf(arq,"%*3c%[^\"]s",cadastros[i].cargo);
         fscanf(arq,"%*3c%[^\"]s",cadastros[i].nomecandidato);
         fscanf(arq,"%*3c%[^\"]s",leitura[i].cpfcandidatoC);
@@ -48,100 +68,433 @@ int main(int argc, char const *argv[])
         fscanf(arq,"%*3c%[^\"]s",cadastros[i].descricaodadespesa);
         fscanf(arq,"%*2c");
     }
+    for(i=0;i<MIN;i++){
+        cadastros[i].cpfdocandidato = atof(leitura[i].cpfcandidatoC);
+        cadastros[i].cpfcnpjdofornecedor = atof(leitura[i].cnpjfornecedorC);
+        cadastros[i].numerocandidato= atof(leitura[i].numerocandidatoC);
+        cadastros[i].sequencialcandidato = atof(leitura[i].sequencialcandidatoC);   
+    }
+
+    printf("Leitura feita com sucesso\n");
+    printf("iniciando metodo de ordenacao...\n");
     
-    for(i=0;i<MAX-1;i++){
-       	cadastros[i].cpfdocandidato = atof(leitura[i].cpfcandidatoC);
-       	cadastros[i].cpfcnpjdofornecedor = atof(leitura[i].cnpjfornecedorC);
-        cadastros[i].sequencialcandidato = atof(cadastros[i].sequencialcandidatoC);   	
-	}	
-	free(leitura);
-  	printf("Leitura feita com sucesso\n");
+        
+    printf("\n.................SELECT SORT.....................\n");
+    tempo_inicio = time(NULL);
+    selection_sort_cpf_candidato(cadastros);
+    tempo_final = time(NULL);
+    printf("Tempo: %f\n", difftime(tempo_final, tempo_inicio));
+        
+    for(i=0;i<MIN;i++){
+        fscanf(arq,"%*c%[^\"]s",cadastros[i].dataehora);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].sequencialcandidatoC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].uf);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].numeroue);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].municipio);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].siglapartido);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].numerocandidatoC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].cargo);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].nomecandidato);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].cpfcandidatoC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].tipododocumento);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].numerododocumento);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].cnpjfornecedorC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].nomedofornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].nomereceitafornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].codsetoreconomicofornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].setoreconomicofornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].datadadespesa);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].valordespesa);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].tipodespesa);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].descricaodadespesa);
+        fscanf(arq,"%*2c");
+    }
+    for(i=0;i<MIN;i++){
+        cadastros[i].cpfdocandidato = atof(leitura[i].cpfcandidatoC);
+        cadastros[i].cpfcnpjdofornecedor = atof(leitura[i].cnpjfornecedorC);
+        cadastros[i].numerocandidato= atof(leitura[i].numerocandidatoC);
+        cadastros[i].sequencialcandidato = atof(leitura[i].sequencialcandidatoC);
+    }
+    printf("\n.................BUBBLE SORT.......................\n");
+    tempo_inicio = time(NULL);
+    bubble_sort_cpf_candidato(cadastros);
+    tempo_final = time(NULL);
+    printf("Tempo: %f\n", difftime(tempo_final, tempo_inicio));
+    for(i=0;i<MIN;i++){
+        fscanf(arq,"%*c%[^\"]s",cadastros[i].dataehora);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].sequencialcandidatoC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].uf);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].numeroue);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].municipio);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].siglapartido);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].numerocandidatoC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].cargo);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].nomecandidato);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].cpfcandidatoC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].tipododocumento);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].numerododocumento);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].cnpjfornecedorC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].nomedofornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].nomereceitafornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].codsetoreconomicofornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].setoreconomicofornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].datadadespesa);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].valordespesa);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].tipodespesa);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].descricaodadespesa);
+        fscanf(arq,"%*2c");
+    }
+    for(i=0;i<MIN;i++){
+        cadastros[i].cpfdocandidato = atof(leitura[i].cpfcandidatoC);
+        cadastros[i].cpfcnpjdofornecedor = atof(leitura[i].cnpjfornecedorC);
+        cadastros[i].numerocandidato= atof(leitura[i].numerocandidatoC);
+        cadastros[i].sequencialcandidato = atof(leitura[i].sequencialcandidatoC);   
+    }
+    printf("\n..................INSERT SORT.........................\n");
+    insert_sort_cpf_candidato(cadastros);
+    tempo_final = time(NULL);
+    printf("Tempo: %f\n", difftime(tempo_final, tempo_inicio));
     
-    //ordenacao_selectsort(cadastros, analise);
-    //ordenacao_booblesort(cadastros, analise);
-    //ordenacao_insertsort(cadastros,analise);
-    ordenacao_quicksort(cadastros, analise);
+    for(i=0;i<MIN;i++){
+        fscanf(arq,"%*c%[^\"]s",cadastros[i].dataehora);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].sequencialcandidatoC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].uf);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].numeroue);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].municipio);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].siglapartido);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].numerocandidatoC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].cargo);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].nomecandidato);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].cpfcandidatoC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].tipododocumento);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].numerododocumento);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].cnpjfornecedorC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].nomedofornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].nomereceitafornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].codsetoreconomicofornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].setoreconomicofornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].datadadespesa);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].valordespesa);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].tipodespesa);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].descricaodadespesa);
+        fscanf(arq,"%*2c");
+    }
+    for(i=0;i<MIN;i++){
+        cadastros[i].cpfdocandidato = atof(leitura[i].cpfcandidatoC);
+        cadastros[i].cpfcnpjdofornecedor = atof(leitura[i].cnpjfornecedorC);
+        cadastros[i].numerocandidato= atof(leitura[i].numerocandidatoC);
+        cadastros[i].sequencialcandidato = atof(leitura[i].sequencialcandidatoC);
+    }
+    printf("\n---------------QUICK SORT--------------------\n");
+    tempo_inicio = time(NULL);
+    count_trocas_sort=quicksort_cpf_candidato(cadastros,0,MIN); /// o meu pc nao roda o quik a 1% ele nao aguenta :(, e eu tmb não consegui contar as trocas sem usar uma varivel global
+    tempo_final = time(NULL);
+    printf("Tempo: %f\n", difftime(tempo_final, tempo_inicio));     
+    printf("Total operacao dominante: trocas = %d\n",count_trocas_sort);
+}
 
-    printf("salvando ordanacao do arquivo saida.txt\n");
-    w_saida(cadastros, saida);
-	printf("arquivo saida.txt OK\n");
+void ordenacao_fornecedor(FILE *arq, campos *cadastros, CHAR *leitura){
+    int i, count_trocas=0,tempo_inicio=0, tempo_final=0;
+
+    for(i=0;i<MIN;i++){
+        fscanf(arq,"%*c%[^\"]s",cadastros[i].dataehora);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].sequencialcandidatoC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].uf);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].numeroue);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].municipio);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].siglapartido);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].numerocandidatoC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].cargo);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].nomecandidato);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].cpfcandidatoC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].tipododocumento);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].numerododocumento);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].cnpjfornecedorC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].nomedofornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].nomereceitafornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].codsetoreconomicofornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].setoreconomicofornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].datadadespesa);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].valordespesa);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].tipodespesa);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].descricaodadespesa);
+        fscanf(arq,"%*2c");
+    }
+    for(i=0;i<MIN;i++){
+        cadastros[i].cpfdocandidato = atof(leitura[i].cpfcandidatoC);
+        cadastros[i].cpfcnpjdofornecedor = atof(leitura[i].cnpjfornecedorC);
+        cadastros[i].numerocandidato= atof(leitura[i].numerocandidatoC);
+        cadastros[i].sequencialcandidato = atof(leitura[i].sequencialcandidatoC);   
+    }
+
+    printf("Leitura feita com sucesso\n");
+    printf("iniciando metodo de ordenacao...\n");
+            
+    printf("\n.................SELECT SORT.....................\n");
+    tempo_inicio = time(NULL);
+    selection_sort_cnpj_fornecedor(cadastros);
+    tempo_final = time(NULL);
+    printf("Tempo: %f\n", difftime(tempo_final, tempo_inicio));
+        
+    for(i=0;i<MIN;i++){
+        fscanf(arq,"%*c%[^\"]s",cadastros[i].dataehora);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].sequencialcandidatoC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].uf);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].numeroue);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].municipio);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].siglapartido);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].numerocandidatoC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].cargo);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].nomecandidato);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].cpfcandidatoC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].tipododocumento);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].numerododocumento);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].cnpjfornecedorC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].nomedofornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].nomereceitafornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].codsetoreconomicofornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].setoreconomicofornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].datadadespesa);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].valordespesa);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].tipodespesa);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].descricaodadespesa);
+        fscanf(arq,"%*2c");
+    }
+    for(i=0;i<MIN;i++){
+        cadastros[i].cpfdocandidato = atof(leitura[i].cpfcandidatoC);
+        cadastros[i].cpfcnpjdofornecedor = atof(leitura[i].cnpjfornecedorC);
+        cadastros[i].numerocandidato= atof(leitura[i].numerocandidatoC);
+        cadastros[i].sequencialcandidato = atof(leitura[i].sequencialcandidatoC);
+    }
+    printf("\n.................BUBBLE SORT.......................\n");
+    tempo_inicio = time(NULL);
+    bubble_sort_cnpj_fornecedor(cadastros);
+    tempo_final = time(NULL);
+    printf("Tempo: %f\n", difftime(tempo_final, tempo_inicio));
+   
+    for(i=0;i<MIN;i++){
+        fscanf(arq,"%*c%[^\"]s",cadastros[i].dataehora);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].sequencialcandidatoC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].uf);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].numeroue);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].municipio);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].siglapartido);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].numerocandidatoC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].cargo);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].nomecandidato);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].cpfcandidatoC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].tipododocumento);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].numerododocumento);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].cnpjfornecedorC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].nomedofornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].nomereceitafornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].codsetoreconomicofornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].setoreconomicofornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].datadadespesa);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].valordespesa);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].tipodespesa);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].descricaodadespesa);
+        fscanf(arq,"%*2c");
+    }
+    for(i=0;i<MIN;i++){
+        cadastros[i].cpfdocandidato = atof(leitura[i].cpfcandidatoC);
+        cadastros[i].cpfcnpjdofornecedor = atof(leitura[i].cnpjfornecedorC);
+        cadastros[i].numerocandidato= atof(leitura[i].numerocandidatoC);
+        cadastros[i].sequencialcandidato = atof(leitura[i].sequencialcandidatoC);   
+    }
+    printf("\n..................INSERT SORT.........................\n");
+    insert_sort_cnpj_fornecedor(cadastros);
+    tempo_final = time(NULL);
+    printf("Tempo: %f\n", difftime(tempo_final, tempo_inicio));
     
-    printf("ENCERRANDO PROGRAMA\n");
-	fclose(arq);
-    fclose(saida);
-    fclose(analise);
-    free(cadastros);
-
-    printf("----------------------FIM----------------------\n");
-    return 0;
+    for(i=0;i<MIN;i++){
+        fscanf(arq,"%*c%[^\"]s",cadastros[i].dataehora);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].sequencialcandidatoC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].uf);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].numeroue);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].municipio);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].siglapartido);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].numerocandidatoC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].cargo);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].nomecandidato);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].cpfcandidatoC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].tipododocumento);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].numerododocumento);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].cnpjfornecedorC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].nomedofornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].nomereceitafornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].codsetoreconomicofornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].setoreconomicofornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].datadadespesa);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].valordespesa);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].tipodespesa);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].descricaodadespesa);
+        fscanf(arq,"%*2c");
+    }
+    for(i=0;i<MIN;i++){
+        cadastros[i].cpfdocandidato = atof(leitura[i].cpfcandidatoC);
+        cadastros[i].cpfcnpjdofornecedor = atof(leitura[i].cnpjfornecedorC);
+        cadastros[i].numerocandidato= atof(leitura[i].numerocandidatoC);
+        cadastros[i].sequencialcandidato = atof(leitura[i].sequencialcandidatoC);
+    }
+    printf("\n---------------QUICK SORT--------------------\n");
+    tempo_inicio = time(NULL);
+    count_trocas_sort = 0;
+    count_trocas_sort=quicksort_cnpj_fornecedor(cadastros,0,MIN); /// o meu pc nao roda o quik a 1% ele nao aguenta :(, e eu tmb não consegui contar as trocas sem usar uma varivel global
+    tempo_final = time(NULL);
+    printf("Tempo: %f\n", difftime(tempo_final, tempo_inicio));     
+    printf("Total operacao dominante: trocas = %d\n",count_trocas_sort);
 }
 
-void ordenacao_selectsort(campos cp[], FILE *analisar){
-    int tempo_inicio, tempo_final;
-    //fseek(analisar, 0, SEEK_END);
-    printf("iniciando metodo de ordenacao...\n");
-    //fprintf(analisar, ".................select sort.....................\n");
-    //fprintf(analisar, ".................select sort char.....................\n");
-    //fprintf(analisar, ".................select sort sequencial candidato.....................\n");
-    fprintf(analisar, ".................select sort cnpj fornecedor.....................\n");
-    tempo_inicio = time(NULL);
-    //selection_sort(cp);
-    //selection_sort_char(cp);
-    //selection_sort_seq_candidato(cp);
-    selection_sort_cnpj_fornecedor(cp);
-    tempo_final = time(NULL);
-    fprintf(analisar, "Tempo: %f\n", difftime(tempo_final, tempo_inicio));
-    fprintf(analisar, "FIM ORDENACAO\n-----------------------------------------------------------------------------\n\n");
-}
+void ordenacao_seq_candidato(FILE *arq, campos *cadastros, CHAR *leitura){
+    int i, count_trocas=0,tempo_inicio=0, tempo_final=0;
 
-void ordenacao_booblesort(campos cp[], FILE *analisar){
-    int tempo_inicio, tempo_final;
-    //fseek(analisar, 0L, SEEK_END);
-    printf("iniciando metodo de ordenacao...\n");
-    //fprintf(analisar, ".................booble sort.......................\n");
-    //fprintf(analisar, ".................booble sort char.......................\n");
-    //fprintf(analisar, ".................booble sort sequencial candidato.......................\n");
-    fprintf(analisar, ".................booble sort cnpj fornecedor.......................\n");
-    tempo_inicio = time(NULL);
-    //bubble_sort(cp);
-    //bubble_sort_char(cp);
-    //bubble_sort_seq_candidato(cp);
-    bubble_sort_cnpj_fornecedor(cp);
-    tempo_final = time(NULL);
-    fprintf(analisar, "Tempo: %f\n", difftime(tempo_final, tempo_inicio));
-    fprintf(analisar, "FIM ORDENACAO\n-----------------------------------------------------------------------------\n\n");
-}
+    for(i=0;i<MIN;i++){
+        fscanf(arq,"%*c%[^\"]s",cadastros[i].dataehora);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].sequencialcandidatoC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].uf);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].numeroue);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].municipio);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].siglapartido);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].numerocandidatoC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].cargo);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].nomecandidato);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].cpfcandidatoC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].tipododocumento);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].numerododocumento);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].cnpjfornecedorC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].nomedofornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].nomereceitafornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].codsetoreconomicofornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].setoreconomicofornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].datadadespesa);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].valordespesa);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].tipodespesa);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].descricaodadespesa);
+        fscanf(arq,"%*2c");
+    }
+    for(i=0;i<MIN;i++){
+        cadastros[i].cpfdocandidato = atof(leitura[i].cpfcandidatoC);
+        cadastros[i].cpfcnpjdofornecedor = atof(leitura[i].cnpjfornecedorC);
+        cadastros[i].numerocandidato= atof(leitura[i].numerocandidatoC);
+        cadastros[i].sequencialcandidato = atof(leitura[i].sequencialcandidatoC);   
+    }
 
-void ordenacao_insertsort(campos cp[], FILE *analisar){
-    int tempo_inicio, tempo_final;
+    printf("Leitura feita com sucesso\n");
     printf("iniciando metodo de ordenacao...\n");
-    //fprintf(analisar, "..................insert sort.........................\n");
-    //fprintf(analisar, "..................insert sort char.........................\n");
-    //fprintf(analisar, "..................insert sort sequencial candidato.........................\n");
-    fprintf(analisar, "..................insert sort cnpj fornecedor.........................\n");
+            
+    printf("\n.................SELECT SORT.....................\n");
     tempo_inicio = time(NULL);
-    //insert_sort(cp);
-    //insert_sort_char(cp);
-    //insert_sort_seq_candidato(cp);
-    insert_sort_cnpj_fornecedor(cp);
+    selection_sort_seq_candidato(cadastros);
     tempo_final = time(NULL);
-    fprintf(analisar, "Tempo: %f\n", difftime(tempo_final, tempo_inicio));
-    fprintf(analisar, "FIM ORDENACAO\n-----------------------------------------------------------------------------\n\n");
-}
-
-void ordenacao_quicksort(campos cp[], FILE *analisar){
-    int tempo_inicio, tempo_final;
-    printf("iniciando metodo de ordenacao...\n");
-    //fprintf(analisar, "---------------Quick Sort--------------------\n");
-    //fprintf(analisar, "---------------Quick Sort char--------------------\n");
-    //fprintf(analisar, "---------------Quick Sort sequencial candidato--------------------\n");
-    fprintf(analisar, "---------------Quick Sort cnpj fornecedor--------------------\n");
+    printf("Tempo: %f\n", difftime(tempo_final, tempo_inicio));
+        
+    for(i=0;i<MIN;i++){
+        fscanf(arq,"%*c%[^\"]s",cadastros[i].dataehora);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].sequencialcandidatoC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].uf);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].numeroue);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].municipio);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].siglapartido);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].numerocandidatoC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].cargo);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].nomecandidato);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].cpfcandidatoC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].tipododocumento);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].numerododocumento);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].cnpjfornecedorC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].nomedofornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].nomereceitafornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].codsetoreconomicofornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].setoreconomicofornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].datadadespesa);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].valordespesa);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].tipodespesa);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].descricaodadespesa);
+        fscanf(arq,"%*2c");
+    }
+    for(i=0;i<MIN;i++){
+        cadastros[i].cpfdocandidato = atof(leitura[i].cpfcandidatoC);
+        cadastros[i].cpfcnpjdofornecedor = atof(leitura[i].cnpjfornecedorC);
+        cadastros[i].numerocandidato= atof(leitura[i].numerocandidatoC);
+        cadastros[i].sequencialcandidato = atof(leitura[i].sequencialcandidatoC);
+    }
+    printf("\n.................BUBBLE SORT.......................\n");
     tempo_inicio = time(NULL);
-    //quicksort(cp,0,MAX-1);
-    //quicksort_char(cp, 0, MAX-1);
-    //quicksort_seq_candidato(cp,0,MAX-1);
-    quicksort_cnpj_fornecedor(cp, 0, MAX-1);
+    bubble_sort_seq_candidato(cadastros);
     tempo_final = time(NULL);
-    fprintf(analisar, "Tempo: %f\n", difftime(tempo_inicio, tempo_final));    
-    fprintf(analisar, "FIM ORDENACAO\n-----------------------------------------------------------------------------\n\n");
+    printf("Tempo: %f\n", difftime(tempo_final, tempo_inicio));
+   
+    for(i=0;i<MIN;i++){
+        fscanf(arq,"%*c%[^\"]s",cadastros[i].dataehora);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].sequencialcandidatoC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].uf);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].numeroue);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].municipio);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].siglapartido);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].numerocandidatoC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].cargo);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].nomecandidato);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].cpfcandidatoC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].tipododocumento);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].numerododocumento);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].cnpjfornecedorC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].nomedofornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].nomereceitafornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].codsetoreconomicofornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].setoreconomicofornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].datadadespesa);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].valordespesa);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].tipodespesa);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].descricaodadespesa);
+        fscanf(arq,"%*2c");
+    }
+    for(i=0;i<MIN;i++){
+        cadastros[i].cpfdocandidato = atof(leitura[i].cpfcandidatoC);
+        cadastros[i].cpfcnpjdofornecedor = atof(leitura[i].cnpjfornecedorC);
+        cadastros[i].numerocandidato= atof(leitura[i].numerocandidatoC);
+        cadastros[i].sequencialcandidato = atof(leitura[i].sequencialcandidatoC);   
+    }
+    printf("\n..................INSERT SORT.........................\n");
+    insert_sort_seq_candidato(cadastros);
+    tempo_final = time(NULL);
+    printf("Tempo: %f\n", difftime(tempo_final, tempo_inicio));
+    
+    for(i=0;i<MIN;i++){
+        fscanf(arq,"%*c%[^\"]s",cadastros[i].dataehora);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].sequencialcandidatoC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].uf);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].numeroue);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].municipio);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].siglapartido);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].numerocandidatoC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].cargo);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].nomecandidato);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].cpfcandidatoC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].tipododocumento);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].numerododocumento);
+        fscanf(arq,"%*3c%[^\"]s",leitura[i].cnpjfornecedorC);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].nomedofornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].nomereceitafornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].codsetoreconomicofornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].setoreconomicofornecedor);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].datadadespesa);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].valordespesa);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].tipodespesa);
+        fscanf(arq,"%*3c%[^\"]s",cadastros[i].descricaodadespesa);
+        fscanf(arq,"%*2c");
+    }
+    for(i=0;i<MIN;i++){
+        cadastros[i].cpfdocandidato = atof(leitura[i].cpfcandidatoC);
+        cadastros[i].cpfcnpjdofornecedor = atof(leitura[i].cnpjfornecedorC);
+        cadastros[i].numerocandidato= atof(leitura[i].numerocandidatoC);
+        cadastros[i].sequencialcandidato = atof(leitura[i].sequencialcandidatoC);
+    }
+    printf("\n---------------QUICK SORT--------------------\n");
+    tempo_inicio = time(NULL);
+    count_trocas_sort = 0;
+    count_trocas_sort=quicksort_seq_candidato(cadastros,0,MIN); /// o meu pc nao roda o quik a 1% ele nao aguenta :(, e eu tmb não consegui contar as trocas sem usar uma varivel global
+    tempo_final = time(NULL);
+    printf("Tempo: %f\n", difftime(tempo_final, tempo_inicio));     
+    printf("Total operacao dominante: trocas = %d\n",count_trocas_sort);
 }

@@ -1,0 +1,61 @@
+        ORDENACAO POR CPF DO CANDICATO!
+Leitura feita com sucesso
+iniciando metodo de ordenacao...
+
+.................SELECT SORT.....................
+Total operação dominante: trocas = 10611
+Tempo: 0.000000
+
+.................BUBBLE SORT.......................
+Total operação dominante: trocas = 1020117
+Tempo: 0.000000
+
+..................INSERT SORT.........................
+Total operação dominante: trocas = 26663817
+Tempo: 11.000000
+
+---------------QUICK SORT--------------------
+Tempo: 0.000000
+Total operacao dominante: trocas = 17806
+
+
+        ORDENACAO POR CPF/CNPJ DO FORNECEDOR!
+Leitura feita com sucesso
+iniciando metodo de ordenacao...
+
+.................SELECT SORT.....................
+Total operação dominante: trocas = 10611
+Tempo: 1.000000
+
+.................BUBBLE SORT.......................
+Total operação dominante: trocas = 29577157
+Tempo: 22.000000
+
+..................INSERT SORT.........................
+Total operação dominante: trocas = 0
+Tempo: 33.000000
+
+---------------QUICK SORT--------------------
+Tempo: 0.000000
+Total operacao dominante: trocas = 21435
+
+
+        ORDENACAO POR SEQUENCIAL DO CANDIDATO!
+Leitura feita com sucesso
+iniciando metodo de ordenacao...
+
+.................SELECT SORT.....................
+Total operação dominante: trocas = 10611
+Tempo: 1.000000
+
+.................BUBBLE SORT.......................
+Total operação dominante: trocas = 0
+Tempo: 0.000000
+
+..................INSERT SORT.........................
+Total operação dominante: trocas = 0
+Tempo: 0.000000
+
+---------------QUICK SORT--------------------
+Tempo: 1.000000
+Total operacao dominante: trocas = 710

@@ -2,9 +2,9 @@ void selection_sort_seq_candidato(campos cp[]){
 	int i = 0, j = 0, pos_menor, count_trocas = 0;
 	campos cp_aux;
 	
-	for (i = 0; i < MAX; i++){
+	for (i = 0; i < MIN; i++){
 		pos_menor = i;
-		for (j=i+1; j < MAX; j++){
+		for (j=i+1; j < MIN; j++){
 			if (cp[j].sequencialcandidato < cp[pos_menor].sequencialcandidato){
 				pos_menor = j;
 			}
@@ -20,9 +20,9 @@ void selection_sort_seq_candidato(campos cp[]){
 void bubble_sort_seq_candidato(campos cp[]){
 	int i, j, trocou = 1, count_trocas = 0;
 	campos cp_aux;
-	for(i = 0; i < MAX && trocou == 1; i++){
+	for(i = 0; i < MIN && trocou == 1; i++){
 		trocou = 0;
-		for(j = 0; j < (MAX - (i + 1)); j++){
+		for(j = 0; j < (MIN - (i + 1)); j++){
 			if (cp[j].sequencialcandidato > cp[j+1].sequencialcandidato){
 				cp_aux = cp[j];
 				cp[j] = cp[j+1];
@@ -38,7 +38,7 @@ void bubble_sort_seq_candidato(campos cp[]){
 void insert_sort_seq_candidato(campos cp[]){
 	int i, j, count_trocas = 0;
 	campos cp_aux;
-	for (i = 1; i < MAX; i++)
+	for (i = 1; i < MIN; i++)
 	{
 		cp_aux = cp[i];
 		for (j = (i - 1);(j >= 0) && (cp[j].sequencialcandidato > cp_aux.sequencialcandidato); j--){
@@ -67,6 +67,7 @@ void partition_seq_candidato(campos cp[], int lb, int ub, int *j){
 			temp = cp[down];
 			cp[down] = cp[up];
 			cp[up] = temp;
+			count_trocas_sort++;
 		}
 	}
 	cp[lb] = cp[up];
@@ -74,10 +75,10 @@ void partition_seq_candidato(campos cp[], int lb, int ub, int *j){
 	*j = up;
 }
 
-void quicksort_seq_candidato(campos cp[], int lb, int ub){
+int quicksort_seq_candidato(campos cp[], int lb, int ub){
 	int j = -1;
     if(lb >= ub)
-        return;                     
+        return count_trocas_sort;                     
     partition_seq_candidato(cp, lb, ub, &j);      
 	quicksort_seq_candidato(cp, lb, j-1);          
 	quicksort_seq_candidato(cp, j+1, ub);

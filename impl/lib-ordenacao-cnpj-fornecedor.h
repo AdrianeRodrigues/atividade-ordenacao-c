@@ -1,10 +1,9 @@
 void selection_sort_cnpj_fornecedor(campos cp[]){
 	int i = 0, j = 0, pos_menor, count_trocas = 0;
 	campos cp_aux;
-	
-	for (i = 0; i < MAX; i++){
+	for (i = 0; i < MIN; i++){
 		pos_menor = i;
-		for (j=i+1; j < MAX; j++){
+		for (j=i+1; j < MIN; j++){
 			if (cp[j].cpfcnpjdofornecedor < cp[pos_menor].cpfcnpjdofornecedor){
 				pos_menor = j;
 			}
@@ -20,9 +19,9 @@ void selection_sort_cnpj_fornecedor(campos cp[]){
 void bubble_sort_cnpj_fornecedor(campos cp[]){
 	int i, j, trocou = 1, count_trocas = 0;
 	campos cp_aux;
-	for(i = 0; i < MAX && trocou==1; i++){
+	for(i = 0; i < MIN && trocou==1; i++){
 		trocou = 0;
-		for(j = 0; j < (MAX - (i + 1)); j++){
+		for(j = 0; j < (MIN - (i + 1)); j++){
 			if (cp[j].cpfcnpjdofornecedor > cp[j+1].cpfcnpjdofornecedor){
 				cp_aux = cp[j];
 				cp[j] = cp[j+1];
@@ -38,7 +37,7 @@ void bubble_sort_cnpj_fornecedor(campos cp[]){
 void insert_sort_cnpj_fornecedor(campos cp[]){
 	int i, j, count_trocas = 0;
 	campos cp_aux;
-	for (i = 1; i < MAX; i++){
+	for (i = 1; i < MIN; i++){
 		cp_aux = cp[i];
 		for (j = (i-1);(j >= 0) && (cp[j].cpfcnpjdofornecedor>cp_aux.cpfcnpjdofornecedor); j--){
 			cp[j+1] = cp[j];
@@ -66,6 +65,7 @@ void partition_cnpj_fornecedor(campos cp[], int lb, int ub, int *j){
 			temp = cp[down];
 			cp[down] = cp[up];
 			cp[up] = temp;
+			count_trocas_sort++;
 		}
 	}
 	cp[lb] = cp[up];
@@ -73,10 +73,10 @@ void partition_cnpj_fornecedor(campos cp[], int lb, int ub, int *j){
 	*j = up;
 }
 
-void quicksort_cnpj_fornecedor(campos cp[], int lb, int ub){
+int quicksort_cnpj_fornecedor(campos cp[], int lb, int ub){
 	int j = -1;
     if(lb >= ub)
-        return;                     
+        return count_trocas_sort;                
     partition_cnpj_fornecedor(cp, lb, ub, &j);      
 	quicksort_cnpj_fornecedor(cp, lb, j-1);          
 	quicksort_cnpj_fornecedor(cp, j+1, ub);
