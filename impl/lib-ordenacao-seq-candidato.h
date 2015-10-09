@@ -84,7 +84,7 @@ int quicksort_seq_candidato(campos cp[], int lb, int ub){
 	quicksort_seq_candidato(cp, j+1, ub);
 }
 
-int busca_binaria_seq_candidato(campos cp[], int chave, int tamanho){
+int busca_binaria_seq_candidato(campos cp[], long chave, int tamanho){
 	int inicio, fim, meio, achou;
 	campos *achado;
 	achou = 0;

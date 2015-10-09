@@ -89,12 +89,10 @@ int quicksort_cpf_candidato(campos cp[], int lb, int ub){
 
     partition_cpf_candidato(cp, lb, ub, &j); 
 	quicksort_cpf_candidato(cp, lb, j-1);          
-	quicksort_cpf_candidato(cp, j+1, ub);
-	       
-	
+	quicksort_cpf_candidato(cp, j+1, ub);	
 }
 
-int busca_binaria(campos cp[], int chave, int tamanho){
+int busca_binaria(campos cp[], long chave, int tamanho){
 	int inicio, fim, meio, achou;
 	campos *achado;
 	achou = 0;
@@ -159,15 +157,17 @@ void bubble_sort_char(campos cp[]){
 }
 
 void insert_sort_char(campos cp[]){
-	int i, j;
+	int i, j, count_trocas = 0;
 	campos cp_aux;
 	for (i = 1; i <MIN; i++){
 		cp_aux = cp[i];
 		for (j = (i-1);(j >= 0) &&(strcmp(cp[j].tipodespesa,cp_aux.tipodespesa)==(1)); j--){
 			cp[j+1] = cp[j];
+			count_trocas++;
 		}
 		cp[j+1] = cp_aux;
 	}
+	printf("Total operação dominante: trocas = %d\n", count_trocas);
 }
 
 void partition_char(campos cp[], int lb, int ub, int *j){
@@ -177,16 +177,17 @@ void partition_char(campos cp[], int lb, int ub, int *j){
 	up = ub;
 	down = lb;
 	while(down < up){
-		while((strcmp(cp[down].tipodespesa,cp_aux.tipodespesa)<=0) && down < ub){
+		while((strcmp(cp[down].tipodespesa,cp_aux.tipodespesa)<0) && down < ub){
 			down++;
 		}
-		while(strcmp(cp[up].tipodespesa,cp_aux.tipodespesa)==1){
+		while(strcmp(cp[up].tipodespesa,cp_aux.tipodespesa)>0 && up > lb){
 			up--;
 		}
 		if (down < up){
 			temp = cp[down];
 			cp[down] = cp[up];
 			cp[up] = temp;
+			count_trocas_sort++;
 		}
 	}
 	cp[lb] = cp[up];
@@ -194,12 +195,12 @@ void partition_char(campos cp[], int lb, int ub, int *j){
 	*j = up;
 }
 
-void quicksort_char(campos cp[], int lb, int ub){
+int quicksort_char(campos cp[], int lb, int ub){
 
     int j = -1;
 	int i =0;
     if(lb >= ub)
-        return;                     
+        return count_trocas_sort;                    
 
     partition_char(cp, lb, ub, &j); 
 	quicksort_char(cp, lb, j-1);          

@@ -82,7 +82,7 @@ int quicksort_cnpj_fornecedor(campos cp[], int lb, int ub){
 	quicksort_cnpj_fornecedor(cp, j+1, ub);
 }
 
-int busca_binaria_cnpj_fornecedor(campos cp[], int chave, int tamanho){
+int busca_binaria_cnpj_fornecedor(campos cp[], long chave, int tamanho){
 	int inicio, fim, meio, achou;
 	campos *achado;
 	achou = 0;
