@@ -1,14 +1,18 @@
+lendo arquivo ...
+DEMONSTRACAO DOS METODOS DE ORDENACAO
+
+
         ORDENACAO POR CPF DO CANDICATO!
 Leitura feita com sucesso
 iniciando metodo de ordenacao...
 
 .................SELECT SORT.....................
 Total operação dominante: trocas = 10611
-Tempo: 0.000000
+Tempo: 1.000000
 
 .................BUBBLE SORT.......................
 Total operação dominante: trocas = 1020117
-Tempo: 0.000000
+Tempo: 1.000000
 
 ..................INSERT SORT.........................
 Total operação dominante: trocas = 26663817
@@ -29,11 +33,11 @@ Tempo: 1.000000
 
 .................BUBBLE SORT.......................
 Total operação dominante: trocas = 29577157
-Tempo: 22.000000
+Tempo: 21.000000
 
 ..................INSERT SORT.........................
-Total operação dominante: trocas = 0
-Tempo: 33.000000
+Total operação dominante: trocas = 26705553
+Tempo: 32.000000
 
 ---------------QUICK SORT--------------------
 Tempo: 0.000000
@@ -57,5 +61,27 @@ Total operação dominante: trocas = 0
 Tempo: 0.000000
 
 ---------------QUICK SORT--------------------
-Tempo: 1.000000
+Tempo: 0.000000
 Total operacao dominante: trocas = 710
+
+
+        ORDENACAO POR TIPO DE DESPESA!
+Leitura feita com sucesso
+iniciando metodo de ordenacao...
+
+.................SELECT SORT.....................
+Total operação dominante: trocas = 10611
+Tempo: 4.000000
+
+.................BUBBLE SORT.......................
+Total operação dominante: trocas = 2478
+Tempo: 0.000000
+
+..................INSERT SORT.........................
+Total operação dominante: trocas = 3902
+Tempo: 1.000000
+
+
+ENCERRANDO PROGRAMA...
+
+----------------------FIM----------------------

@@ -41,6 +41,7 @@ void insert_sort_cnpj_fornecedor(campos cp[]){
 		cp_aux = cp[i];
 		for (j = (i-1);(j >= 0) && (cp[j].cpfcnpjdofornecedor>cp_aux.cpfcnpjdofornecedor); j--){
 			cp[j+1] = cp[j];
+			count_trocas++;
 		}
 		cp[j+1] = cp_aux;
 	}

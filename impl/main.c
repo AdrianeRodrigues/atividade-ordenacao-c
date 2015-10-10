@@ -143,7 +143,7 @@ void ordenacao_fornecedor(FILE *arq, campos *cadastros, CHAR *leitura){
     printf("\n---------------QUICK SORT--------------------\n");
     tempo_inicio = time(NULL);
     count_trocas_sort = 0;
-    count_trocas_sort=quicksort_cnpj_fornecedor(cadastros,0,MIN); /// o meu pc nao roda o quik a 1% ele nao aguenta :(, e eu tmb não consegui contar as trocas sem usar uma varivel global
+    count_trocas_sort=quicksort_cnpj_fornecedor(cadastros,0,MIN);
     tempo_final = time(NULL);
     printf("Tempo: %f\n", difftime(tempo_final, tempo_inicio));     
     printf("Total operacao dominante: trocas = %d\n",count_trocas_sort);
@@ -179,7 +179,7 @@ void ordenacao_seq_candidato(FILE *arq, campos *cadastros, CHAR *leitura){
     printf("\n---------------QUICK SORT--------------------\n");
     tempo_inicio = time(NULL);
     count_trocas_sort = 0;
-    count_trocas_sort=quicksort_seq_candidato(cadastros,0,MIN); /// o meu pc nao roda o quik a 1% ele nao aguenta :(, e eu tmb não consegui contar as trocas sem usar uma varivel global
+    count_trocas_sort=quicksort_seq_candidato(cadastros,0,MIN); 
     tempo_final = time(NULL);
     printf("Tempo: %f\n", difftime(tempo_final, tempo_inicio));     
     printf("Total operacao dominante: trocas = %d\n",count_trocas_sort);

@@ -43,6 +43,7 @@ void insert_sort_seq_candidato(campos cp[]){
 		cp_aux = cp[i];
 		for (j = (i - 1);(j >= 0) && (cp[j].sequencialcandidato > cp_aux.sequencialcandidato); j--){
 			cp[j+1] = cp[j];
+			count_trocas++;
 		}
 		cp[j+1] = cp_aux;
 	}
